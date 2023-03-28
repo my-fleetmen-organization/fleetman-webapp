@@ -22,6 +22,12 @@ pipeline {
             sh 'echo No build required for Webapp.'
          }
       }
+      
+      stage('Build and Push Image') {
+         steps {
+           sh 'docker image build -t ${REPOSITORY_TAG} .'
+         }
+      }
 
       stage('Push Image to Docker Hub') {
          steps {
