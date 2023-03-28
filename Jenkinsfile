@@ -23,15 +23,18 @@ pipeline {
          }
       }
 
-      stage('Build and Push Image') {
+      stage('Push Image to Docker Hub') {
          steps {
-           sh 'docker image build -t ${REPOSITORY_TAG} .'
+            sh '''
+               docker login -u ${YOUR_DOCKERHUB_USERNAME} -p ${DOCKER_HUB_ACCESS_TOKEN}
+               docker push $REPOSITORY_TAG
+            '''
          }
       }
 
       stage('Deploy to Cluster') {
           steps {
-            sh 'envsubst < ${WORKSPACE}/deploy.yaml | kubectl apply -f -'
+                    sh 'envsubst < ${WORKSPACE}/deploy.yaml | kubectl --kubeconfig /var/jenkins_home/kube_config/config apply -f -'
           }
       }
    }
